@@ -22,7 +22,8 @@
   "content_scripts": [
     {
       "matches": ["http://*/*","https://*/*"],
-      "js": ["scripts/shot.js"]
+      "js": ["scripts/shot.js"],
+      "css": ["styles/main.css"]
     }
   ],
   "browser_action": {
