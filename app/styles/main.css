@@ -1,4 +1,4 @@
-#ACP_sampleTarget{
+#ACP_container{
   position: fixed;
   top: 0;
   left: 0;
@@ -9,22 +9,11 @@
   cursor: crosshair;
 }
 
-* {
-    padding: 0;
-    margin: 0;
-}
-body {
-    font-family: 'Courier New';
-    font-size: 12px;
-}
-img {
-    vertical-align:middle;
-}
-#ACP_container {
+#ACP_content {
     width: 100%;
     height: 100%;
 }
-#info {
+#ACP_info {
     background-color: rgba(0,0,0,.7);
     padding: 20px;
     border-radius: 10px;
@@ -34,7 +23,7 @@ img {
     left: auto;
     color:white;
 }
-#display {
+#ACP_display {
     float: left;
     width: 15px;
     height: 15px;
@@ -42,22 +31,22 @@ img {
     background-color: #fff;
     border: 1px solid #eee;
 }
-ul {
+#ACP_container ul {
     float: left;
     margin-right: 15px;
     list-style: none;
 }
-li {
+#ACP_container li {
     float: left;
     margin-right: 5px;
     line-height: 12px;
 }
-input {
+#ACP_container input {
     font-size: 12px;
     font-family: 'Courier New';
     border: 1px solid #eee;
 }
-#close{
+#ACP_close{
   position: absolute;
   top: 0;
   right: 0;
@@ -65,12 +54,12 @@ input {
   height: 20px;
   background: blue;
 }
-#cursor {
+#ACP_cursor {
     width: 20px;
     height: 20px;
     border-radius: 20px;
     box-shadow: 0 2px 3px rgba(0,0,0,.5);
     border: 1px solid #aaa;
     position: absolute;
-    display: none;
+    ACP_display: none;
 }

@@ -1,6 +1,6 @@
 // chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 //   var screenshotImg = document.createElement('img');
-//   screenshotImg.id = 'ACP_sampleTarget';
+//   screenshotImg.id = 'ACP_container';
 //   screenshotImg.src = request.url;
 //   screenshotImg.addEventListener('click', () => document.body.removeChild(screenshotImg), false);
 //   document.body.appendChild(screenshotImg);
@@ -18,14 +18,14 @@
  //         'http://jsrun.it/assets/i/C/b/9/iCb98.jpg'
  //     ],
 var imgUrl = '',
-    ACP_container,
+    ACP_content,
     canvas,
     ctx,
     colors = [],
     img,
-    display,
+    ACP_display,
     inputs,
-    close,
+    ACP_close,
     picker,
     holding = false;
 
@@ -41,10 +41,10 @@ function $id(id) { return document.getElementById(id); }
 
 function init(url) {
 
-    ACP_container = document.createElement('div');
-    ACP_container.id = 'ACP_sampleTarget';
-    ACP_container.innerHTML = '<div id="ACP_container"><img id="img" src="" alt=""></div><div id="info"><div id="display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul><div id="close"></div></div><div id="cursor"></div>';
-    document.body.appendChild(ACP_container);
+    ACP_content = document.createElement('div');
+    ACP_content.id = 'ACP_container';
+    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div id="ACP_display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul><div id="ACP_close"></div></div><div id="ACP_cursor"></div>';
+    document.body.appendChild(ACP_content);
 
     // 画像
     img = $id('img');
@@ -56,18 +56,18 @@ function init(url) {
     ctx = canvas.getContext('2d');
 
     // カラー表示
-    display = $id('display');
+    ACP_display = $id('ACP_display');
     inputs = {
         r: $id('r'), g: $id('g'), b: $id('b'), // RGB
         hex: $id('hex'), // HEX
         h: $id('h'), s: $id('s'), l: $id('l') // HSL
     };
 
-    close = $id('close');
-    close.addEventListener('click', closeAll, false);
+    ACP_close = $id('ACP_close');
+    ACP_close.addEventListener('click', closeAll, false);
 
     // ピッカー
-    picker = $id('cursor');
+    picker = $id('ACP_cursor');
 }
 
 function loadComplete() {
@@ -117,7 +117,7 @@ function mouseMove(e) {
     h = color[3]; s = color[4]; l = color[5];
 
     // カラー表示
-    display.style.backgroundColor = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+    ACP_display.style.backgroundColor = 'rgb(' + r + ', ' + g + ', ' + b + ')';
 
     // RGB 情報
     inputs.r.value = r; inputs.g.value = g; inputs.b.value = b;
@@ -148,12 +148,12 @@ function getElementPosition(elem) {
 
 function mouseDown(e) {
     if (!holding) {
-    	picker.style.display = 'block';
+    	picker.style.ACP_display = 'block';
     	picker.style.left = e.clientX - 11 + 'px';
       picker.style.top = e.clientY - 11 + 'px';
-    	picker.style.backgroundColor = display.style.backgroundColor;
+    	picker.style.backgroundColor = ACP_display.style.backgroundColor;
     } else {
-    	picker.style.display = 'none';
+    	picker.style.ACP_display = 'none';
     }
     holding = !holding;
 }
@@ -186,5 +186,5 @@ function rgbToHsl(r, g, b) {
 }
 
 function closeAll(){
-  document.body.removeChild(ACP_container);
+  document.body.removeChild(ACP_content);
 }
