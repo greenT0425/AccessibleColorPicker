@@ -1,22 +1,23 @@
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-  var screenshotImg = document.createElement('img');
-  screenshotImg.id = 'sampleTarget';
-  screenshotImg.src = request.url;
-  screenshotImg.addEventListener('click', () => document.body.removeChild(screenshotImg), false);
-  document.body.appendChild(screenshotImg);
-  return true;
-})
-
+// chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+//   var screenshotImg = document.createElement('img');
+//   screenshotImg.id = 'sampleTarget';
+//   screenshotImg.src = request.url;
+//   screenshotImg.addEventListener('click', () => document.body.removeChild(screenshotImg), false);
+//   document.body.appendChild(screenshotImg);
+//
+//   return true;
+// })
 
 
 /*
- * クリックして色を取得する座標を固定, もう一度クリックして解除
+ * クリックして色を取得する座標を固定, もう一度クリックして解除　
  */
 
-var IMG_URL = [
-        'http://jsrun.it/assets/7/W/q/q/7WqqS.jpg',
-        'http://jsrun.it/assets/i/C/b/9/iCb98.jpg'
-    ],
+ // var IMG_URL = [
+ //         'http://jsrun.it/assets/7/W/q/q/7WqqS.jpg',
+ //         'http://jsrun.it/assets/i/C/b/9/iCb98.jpg'
+ //     ],
+var imgUrl = '',
     canvas,
     ctx,
     colors = [],
@@ -26,13 +27,26 @@ var IMG_URL = [
     picker,
     holding = false;
 
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+  init(request.url);
+  return true;
+})
+
+
+
 function $id(id) { return document.getElementById(id); }
 
-function init() {
+function init(url) {
+
+    var testDiv = document.createElement('div');
+    testDiv.id = 'sampleTarget';
+    testDiv.innerHTML = '<div id="container"><img id="img" src="" alt=""></div><div id="info"><div id="display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul></div><div id="cursor"></div>';
+    document.body.appendChild(testDiv);
+
     // 画像
     img = $id('img');
     img.addEventListener('load', loadComplete, false);
-    img.src = IMG_URL[Math.floor(Math.random () * IMG_URL.length)];
+    img.src = url;
 
     // 色情報を取得するための canvas
     canvas = document.createElement('canvas');
@@ -129,7 +143,8 @@ function mouseDown(e) {
     if (!holding) {
     	picker.style.display = 'block';
     	picker.style.left = e.clientX - 2 + 'px';
-    	picker.style.top = e.clientY - 2 + 'px';
+      picker.style.top = e.clientY - 2 + 'px';
+    	picker.style.backgroundColor = display.style.backgroundColor;
     } else {
     	picker.style.display = 'none';
     }
@@ -162,7 +177,3 @@ function rgbToHsl(r, g, b) {
 
     return [h, s, l, 'hsl'];
 }
-
-window.onload = function() {
-    init();
-};
