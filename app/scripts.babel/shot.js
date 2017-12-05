@@ -25,12 +25,14 @@ var imgUrl = '',
     img,
     ACP_display,
     inputs,
+    ACP_sample_bg,
+    ACP_sample_text,
     ACP_close,
     picker,
     holding = false;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-  if(document.getElementById('')) return false;
+  if(document.getElementById('ACP_container')) return false;
   init(request.url);
   return true;
 })
@@ -43,7 +45,7 @@ function init(url) {
 
     ACP_content = document.createElement('div');
     ACP_content.id = 'ACP_container';
-    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div id="ACP_display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul><div id="ACP_close"></div></div><div id="ACP_cursor"></div>';
+    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div id="ACP_display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul><div id="ACP_sample_bg"><span id="ACP_sample_text">sampleですー</span></div><div id="ACP_close">閉じる</div></div><div id="ACP_cursor"></div>';
     document.body.appendChild(ACP_content);
 
     // 画像
@@ -62,6 +64,12 @@ function init(url) {
         hex: $id('hex'), // HEX
         h: $id('h'), s: $id('s'), l: $id('l') // HSL
     };
+
+    // サンプル背景
+    ACP_sample_bg = $id('ACP_sample_bg');
+
+    // サンプルテキスト
+    ACP_sample_text = $id('ACP_sample_text');
 
     ACP_close = $id('ACP_close');
     ACP_close.addEventListener('click', closeAll, false);
@@ -148,15 +156,102 @@ function getElementPosition(elem) {
 
 function mouseDown(e) {
     if (!holding) {
-    	picker.style.ACP_display = 'block';
+
+      var mx, my, n, color, r, g, b, h, s, l;
+
+      // カーソル位置からピクセルの配列位置を取得
+      n = e.offsetX + e.offsetY * (img.width - 1);
+      // Firefox の場合 (offsetX, offsetY から値が取れない場合)
+      if (!n && n !== 0) {
+      	var pos = getElementPosition(img);
+      	n = (e.layerX - pos.x) + (e.layerY - pos.y) * (img.width - 1);
+      }
+
+      color = colors[n];
+      if (!color) return;
+      r = color[0]; g = color[1]; b = color[2];
+      h = color[3]; s = color[4]; l = color[5];
+
+
+    	picker.style.display = 'block';
     	picker.style.left = e.clientX - 11 + 'px';
       picker.style.top = e.clientY - 11 + 'px';
     	picker.style.backgroundColor = ACP_display.style.backgroundColor;
+      var sampleColor = getAccessibleColor(r,g,b);
+      ACP_sample_bg.style.backgroundColor = ACP_display.style.backgroundColor;
+      ACP_sample_text.style.color =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
     } else {
-    	picker.style.ACP_display = 'none';
+    	picker.style.display = 'none';
     }
     holding = !holding;
 }
+
+function getAccessibleColor(r,g,b){
+
+
+  // rgbから明るさを算出
+  // 明るさの差は125以上
+  var brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+  var brightness_threshold = 125;
+  var sample_brightness;
+  if (brightness >= 128) {
+    sample_brightness = brightness - brightness_threshold;
+  }else {
+    sample_brightness = brightness + brightness_threshold;
+  }
+
+  // 輝度L1、L2を計算式 dR x .2126 + dG x .7152 + dB x .0722 で算出。ただし、R'、G'、B'はRならばsR=R/255; R' = (sR <= 0.03928) ? sR/12.92 : ((sR+0.055)/1.055) ^ 2.4;としてガンマ補正したリニア化RGBの値とし、L1は前景、背景のうち輝度の大きい方の値、L2は小さい方の値とする
+  // 輝度比は4.5以上
+  var sR = r / 255;
+  var sG = g / 255;
+  var sB = b / 255;
+  var dR = (sR <= 0.03928) ? sR/12.92 : Math.pow(((sR+0.055)/1.055),2.4);
+  var dG = (sG <= 0.03928) ? sG/12.92 : Math.pow(((sG+0.055)/1.055),2.4);
+  var dB = (sB <= 0.03928) ? sB/12.92 : Math.pow(((sB+0.055)/1.055),2.4);
+  var luminosity = dR * .2126 + dG * .7152 + dB * .0722;
+  var luminosity_threshold = 4.5;
+  var sample_luminosity;
+  var l1 = (luminosity + .05) * luminosity_threshold - .05;
+  var l2 = (luminosity + .05) / luminosity_threshold - .05;
+
+  // if (l1 - luminosity < .001 && l1 - luminosity > -.001) {
+  //   sample_luminosity = l2;
+  // }else{
+  //   sample_luminosity = l1;
+  // }
+  // if (sample_luminosity>1 || sample_luminosity<0) {
+  //   console.log('提案できる色がありません');
+  //   if(sample_luminosity>1)sample_luminosity =1;
+  //   if(sample_luminosity<0)sample_luminosity =0;
+  // }
+
+  if (luminosity>=.5) {
+    console.log('あかるい');
+    // luminosityが明るい場合
+    sample_luminosity = (luminosity + .05) * luminosity_threshold - .05;
+    if (sample_luminosity>1 || sample_luminosity<0) {
+      sample_luminosity = (luminosity + .05) / luminosity_threshold - .05;
+    }
+  }else{
+    console.log('くらい');
+    // luminosityがくらい場合
+    sample_luminosity = (luminosity + .05) / luminosity_threshold - .05;
+    if (sample_luminosity>1 || sample_luminosity<0) {
+      sample_luminosity = (luminosity + .05) * luminosity_threshold - .05;
+    }
+  }
+
+  // return アクセシブルなhsl,それ以上か以下か
+  var hslColor = rgbToHsl(r,g,b);
+  hslColor[2] = sample_brightness/255;
+  hslColor[2] = sample_luminosity;
+
+  console.log('rgb:' + r + ',' + g + ',' + b + '\nhsl:' + hslColor +'\nluminosity:' + luminosity+ '\nl1:'+ l1+ '\nl2:'+ l2 +'\nsample_luminosity:' + sample_luminosity + '\n提案rgb:' + hsvToRgb(hslColor[0],hslColor[1],hslColor[2]) + '\n提案hsl:' + hslColor[0] +',' + hslColor[1] + ',' + hslColor[2]);
+
+  // return hsvToRgb(hslColor[0],hslColor[1],sample_luminosity);
+  return [hslColor[0],hslColor[1],sample_luminosity]
+}
+
 
 /**
  * RGB -> HSL
@@ -183,6 +278,31 @@ function rgbToHsl(r, g, b) {
     l = (r *  0.3 + g * 0.59 + b * 0.11) / 255;
 
     return [h, s, l, 'hsl'];
+}
+
+function hsvToRgb(h,s,v) {
+    //https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
+
+    var C = v * s;
+    var Hp = h / 60;
+    var X = C * (1 - Math.abs(Hp % 2 - 1));
+
+    var R, G, B;
+    if (0 <= Hp && Hp < 1) {[R,G,B]=[C,X,0]};
+    if (1 <= Hp && Hp < 2) {[R,G,B]=[X,C,0]};
+    if (2 <= Hp && Hp < 3) {[R,G,B]=[0,C,X]};
+    if (3 <= Hp && Hp < 4) {[R,G,B]=[0,X,C]};
+    if (4 <= Hp && Hp < 5) {[R,G,B]=[X,0,C]};
+    if (5 <= Hp && Hp < 6) {[R,G,B]=[C,0,X]};
+
+    var m = v - C;
+    [R, G, B] = [R+m, G+m, B+m];
+
+    R = Math.floor(R * 255);
+    G = Math.floor(G * 255);
+    B = Math.floor(B * 255);
+
+    return [R ,G, B];
 }
 
 function closeAll(){

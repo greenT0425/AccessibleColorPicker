@@ -46,11 +46,14 @@
     font-family: 'Courier New';
     border: 1px solid #eee;
 }
+#ACP_sample_bg{
+}
+#ACP_sample_text{
+}
 #ACP_close{
   position: absolute;
   top: 0;
   right: 0;
-  width: 20px;
   height: 20px;
   background: blue;
 }
