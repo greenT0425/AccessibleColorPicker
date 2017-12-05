@@ -18,12 +18,14 @@
  //         'http://jsrun.it/assets/i/C/b/9/iCb98.jpg'
  //     ],
 var imgUrl = '',
+    container,
     canvas,
     ctx,
     colors = [],
     img,
     display,
     inputs,
+    close,
     picker,
     holding = false;
 
@@ -38,10 +40,10 @@ function $id(id) { return document.getElementById(id); }
 
 function init(url) {
 
-    var testDiv = document.createElement('div');
-    testDiv.id = 'sampleTarget';
-    testDiv.innerHTML = '<div id="container"><img id="img" src="" alt=""></div><div id="info"><div id="display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul></div><div id="cursor"></div>';
-    document.body.appendChild(testDiv);
+    container = document.createElement('div');
+    container.id = 'sampleTarget';
+    container.innerHTML = '<div id="container"><img id="img" src="" alt=""></div><div id="info"><div id="display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul><div id="close"></div></div><div id="cursor"></div>';
+    document.body.appendChild(container);
 
     // 画像
     img = $id('img');
@@ -59,6 +61,10 @@ function init(url) {
         hex: $id('hex'), // HEX
         h: $id('h'), s: $id('s'), l: $id('l') // HSL
     };
+
+    close = $id('close');
+    close.addEventListener('click', closeAll, false);
+
     // ピッカー
     picker = $id('cursor');
 }
@@ -142,8 +148,8 @@ function getElementPosition(elem) {
 function mouseDown(e) {
     if (!holding) {
     	picker.style.display = 'block';
-    	picker.style.left = e.clientX - 2 + 'px';
-      picker.style.top = e.clientY - 2 + 'px';
+    	picker.style.left = e.clientX - 11 + 'px';
+      picker.style.top = e.clientY - 11 + 'px';
     	picker.style.backgroundColor = display.style.backgroundColor;
     } else {
     	picker.style.display = 'none';
@@ -176,4 +182,8 @@ function rgbToHsl(r, g, b) {
     l = (r *  0.3 + g * 0.59 + b * 0.11) / 255;
 
     return [h, s, l, 'hsl'];
+}
+
+function closeAll(){
+  document.body.removeChild(container);
 }
