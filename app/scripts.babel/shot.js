@@ -24,6 +24,7 @@ var imgUrl = '',
     colors = [],
     img,
     ACP_display,
+    ACP_text_display,
     inputs,
     ACP_sample_bg,
     ACP_sample_text,
@@ -45,7 +46,7 @@ function init(url) {
 
     ACP_content = document.createElement('div');
     ACP_content.id = 'ACP_container';
-    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div id="ACP_display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul><div id="ACP_sample_bg"><span id="ACP_sample_text">sampleですー</span></div><div id="ACP_close">閉じる</div></div><div id="ACP_cursor"></div>';
+    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div class="ACP_bg_color"><div id="ACP_display"></div><div><label>  HEX:  <input onclick="this.select(0,this.value.length)" id="hex" type="text" name="" value=""></label><label>  RGB:  <input onclick="this.select(0,this.value.length)" id="rgb" type="text" value="rgb(255, 0, 0)"></label><label>  HSL:  <input onclick="this.select(0,this.value.length)" id="hsl" type="text" value="hsl(360, 0%, 0%)"></label></div></div><div class="ACP_text_color">  <div id="ACP_text_display"></div> <div> <label>    HEX:    <input onclick="this.select(0,this.value.length)" id="text_hex" type="text" name="" value="">  </label>  <label>    RGB:    <input onclick="this.select(0,this.value.length)" id="text_rgb" type="text" value="rgb(255, 0, 0)">  </label>  <label>    HSL:    <input onclick="this.select(0,this.value.length)" id="text_hsl" type="text" value="hsl(360, 0%, 0%)">  </label></div></div><div id="ACP_sample_bg"><span id="ACP_sample_text">sampleですー</span></div><div id="ACP_close">閉じる</div></div><div id="ACP_cursor"></div>';
     document.body.appendChild(ACP_content);
 
     // 画像
@@ -59,9 +60,15 @@ function init(url) {
 
     // カラー表示
     ACP_display = $id('ACP_display');
+    ACP_text_display = $id('ACP_text_display');
     inputs = {
         r: $id('r'), g: $id('g'), b: $id('b'), // RGB
         hex: $id('hex'), // HEX
+        rgb: $id('rgb'), // HEX
+        hsl: $id('hsl'), // HEX
+        text_hex: $id('text_hex'), // HEX
+        text_rgb: $id('text_rgb'), // HEX
+        text_hsl: $id('text_hsl'), // HEX
         h: $id('h'), s: $id('s'), l: $id('l') // HSL
     };
 
@@ -128,11 +135,11 @@ function mouseMove(e) {
     ACP_display.style.backgroundColor = 'rgb(' + r + ', ' + g + ', ' + b + ')';
 
     // RGB 情報
-    inputs.r.value = r; inputs.g.value = g; inputs.b.value = b;
-    inputs.hex.value = (b | (g << 8) | (r << 16)).toString(16).toUpperCase();
+    inputs.hex.value = '#' + (b | (g << 8) | (r << 16)).toString(16).toUpperCase();
+    inputs.rgb.value = 'rgb(' + r + ',' + g + ',' + b + ')';
 
     // HSL 情報
-    inputs.h.value = h; inputs.s.value = s; inputs.l.value = l;
+    inputs.hsl.value = 'hsl(' + Math.round(h) + ',' + Math.round(s) + '%,' + Math.round(l) + '%)';
 }
 
 /*
@@ -180,6 +187,11 @@ function mouseDown(e) {
       var sampleColor = getAccessibleColor(r,g,b);
       ACP_sample_bg.style.backgroundColor = ACP_display.style.backgroundColor;
       ACP_sample_text.style.color =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
+      ACP_text_display.style.backgroundColor =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
+      inputs.text_hex.value = '#' + (b | (g << 8) | (r << 16)).toString(16).toUpperCase();
+      inputs.text_rgb.value = 'rgb(' + r + ',' + g + ',' + b + ')';
+      inputs.text_hsl.value = 'hsl(' + Math.round(sampleColor[0]) + ',' + Math.round(sampleColor[1]*100) + '%,' + Math.round(sampleColor[2]*100) + '%)';
+
     } else {
     	picker.style.display = 'none';
     }

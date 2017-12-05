@@ -10,59 +10,78 @@
 }
 
 #ACP_content {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 #ACP_info {
-    background-color: rgba(0,0,0,.7);
-    padding: 20px;
-    border-radius: 10px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: auto;
-    color:white;
-}
-#ACP_display {
-    float: left;
-    width: 15px;
-    height: 15px;
-    margin-right: 15px;
-    background-color: #fff;
-    border: 1px solid #eee;
-}
-#ACP_container ul {
-    float: left;
-    margin-right: 15px;
-    list-style: none;
-}
-#ACP_container li {
-    float: left;
-    margin-right: 5px;
-    line-height: 12px;
-}
-#ACP_container input {
-    font-size: 12px;
-    font-family: 'Courier New';
-    border: 1px solid #eee;
-}
-#ACP_sample_bg{
-}
-#ACP_sample_text{
-}
-#ACP_close{
+  background-color: rgba(0,0,0,.7);
+  padding: 20px;
+  border-radius: 10px;
   position: absolute;
   top: 0;
   right: 0;
-  height: 20px;
-  background: blue;
+  left: auto;
+  color:white;
+}
+.ACP_bg_color,
+.ACP_text_color{
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+.ACP_bg_color label,
+.ACP_text_color label{
+  display: block;
+}
+#ACP_display,
+#ACP_text_display {
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 40px;
+  margin-right: 10px;
+}
+#ACP_container ul {
+  float: left;
+  margin-right: 15px;
+  list-style: none;
+}
+#ACP_container li {
+  float: left;
+  margin-right: 5px;
+  line-height: 12px;
+}
+#ACP_container input {
+  font-size: 12px;
+  font-family: 'Courier New';
+  border: 1px solid #eee;
+}
+#ACP_sample_bg{
+  margin-bottom: 20px;
+}
+#ACP_sample_text{
+  text-align: center;
+  padding: 20px;
+  display: block;
+  box-sizing: border-box;
+}
+#ACP_close{
+  width: 50%;
+  height: 30px;
+  margin: 0 auto;
+  text-align: center;
+  line-height: 30px;
+  border: 1px solid white;
 }
 #ACP_cursor {
-    width: 20px;
-    height: 20px;
-    border-radius: 20px;
-    box-shadow: 0 2px 3px rgba(0,0,0,.5);
-    border: 1px solid #aaa;
-    position: absolute;
-    ACP_display: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  box-shadow: 0 2px 3px rgba(0,0,0,.5);
+  border: 1px solid #aaa;
+  position: absolute;
+  ACP_display: none;
 }
