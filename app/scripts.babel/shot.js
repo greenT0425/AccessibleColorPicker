@@ -1,6 +1,6 @@
 // chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
 //   var screenshotImg = document.createElement('img');
-//   screenshotImg.id = 'sampleTarget';
+//   screenshotImg.id = 'ACP_sampleTarget';
 //   screenshotImg.src = request.url;
 //   screenshotImg.addEventListener('click', () => document.body.removeChild(screenshotImg), false);
 //   document.body.appendChild(screenshotImg);
@@ -18,7 +18,7 @@
  //         'http://jsrun.it/assets/i/C/b/9/iCb98.jpg'
  //     ],
 var imgUrl = '',
-    container,
+    ACP_container,
     canvas,
     ctx,
     colors = [],
@@ -30,6 +30,7 @@ var imgUrl = '',
     holding = false;
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
+  if(document.getElementById('')) return false;
   init(request.url);
   return true;
 })
@@ -40,10 +41,10 @@ function $id(id) { return document.getElementById(id); }
 
 function init(url) {
 
-    container = document.createElement('div');
-    container.id = 'sampleTarget';
-    container.innerHTML = '<div id="container"><img id="img" src="" alt=""></div><div id="info"><div id="display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul><div id="close"></div></div><div id="cursor"></div>';
-    document.body.appendChild(container);
+    ACP_container = document.createElement('div');
+    ACP_container.id = 'ACP_sampleTarget';
+    ACP_container.innerHTML = '<div id="ACP_container"><img id="img" src="" alt=""></div><div id="info"><div id="display"></div><ul><li>#<input id="hex" size="6" type="text" value="FFFFFF"></li></ul><ul><li>R:<input id="r" size="3" type="text" value="255"></li><li>G:<input id="g" size="3" type="text" value="255"></li><li>B:<input id="b" size="3" type="text" value="255"></li></ul><ul><li>H:<input id="h" size="3" type="text" value="0"></li><li>S:<input id="s" size="3" type="text" value="0"></li><li>L:<input id="l" size="3" type="text" value="100"></li></ul><div id="close"></div></div><div id="cursor"></div>';
+    document.body.appendChild(ACP_container);
 
     // 画像
     img = $id('img');
@@ -106,8 +107,8 @@ function mouseMove(e) {
     n = e.offsetX + e.offsetY * (img.width - 1);
     // Firefox の場合 (offsetX, offsetY から値が取れない場合)
     if (!n && n !== 0) {
-	var pos = getElementPosition(img);
-	n = (e.layerX - pos.x) + (e.layerY - pos.y) * (img.width - 1);
+    	var pos = getElementPosition(img);
+    	n = (e.layerX - pos.x) + (e.layerY - pos.y) * (img.width - 1);
     }
 
     color = colors[n];
@@ -185,5 +186,5 @@ function rgbToHsl(r, g, b) {
 }
 
 function closeAll(){
-  document.body.removeChild(container);
+  document.body.removeChild(ACP_container);
 }

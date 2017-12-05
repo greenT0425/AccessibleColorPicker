@@ -1,9 +1,5 @@
 'use strict';
 
-chrome.runtime.onInstalled.addListener(details => {
-  console.log('previousVersion', details.previousVersion);
-});
-
 chrome.browserAction.onClicked.addListener(function() {
   chrome.tabs.query({ currentWindow: true, active: true },
     function (tabArray) {
