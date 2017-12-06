@@ -5,9 +5,9 @@
   width: 100%;
   z-index: 100;
   border: 1px solid red;
+  box-sizing: border-box;
   background: white;
   cursor: crosshair;
-  color: white;
 }
 
 #ACP_content {
@@ -17,13 +17,15 @@
 #ACP_info {
   background-color: rgba(0,0,0,.7);
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 5px;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 5px;
+  right: 5px;
   left: auto;
   color:white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
+
 .ACP_bg_color,
 .ACP_text_color{
   width: 100%;
@@ -34,8 +36,24 @@
 }
 .ACP_bg_color label,
 .ACP_text_color label{
+  color: white;
   display: block;
+  margin: 5px;
 }
+.ACP_bg_color span,
+.ACP_text_color span{
+  width: 4em;
+  display: inline-block;
+}
+.ACP_bg_color input,
+.ACP_text_color input{
+  width: 11em;
+  height:30px;
+  font-size: 1.2em;
+  padding: 0.3em;
+  border-radius: 5px;
+}
+
 #ACP_display,
 #ACP_text_display {
   width: 40px;
@@ -76,13 +94,16 @@
   text-align: center;
   line-height: 30px;
   border: 1px solid white;
+  color: white;
 }
 #ACP_cursor {
   width: 20px;
   height: 20px;
   border-radius: 20px;
-  box-shadow: 0 2px 3px rgba(0,0,0,.5);
-  border: 1px solid #aaa;
+  box-shadow: 0 2px 4px rgba(0,0,0,.5);
   position: absolute;
-  ACP_display: none;
+  top:0;
+  left:0;
+  pointer-events: none;
+  /*display: none;*/
 }

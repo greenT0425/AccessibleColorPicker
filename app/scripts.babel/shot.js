@@ -46,7 +46,7 @@ function init(url) {
 
     ACP_content = document.createElement('div');
     ACP_content.id = 'ACP_container';
-    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div class="ACP_bg_color"><div id="ACP_display"></div><div><label>  HEX:  <input onclick="this.select(0,this.value.length)" id="hex" type="text" name="" value=""></label><label>  RGB:  <input onclick="this.select(0,this.value.length)" id="rgb" type="text" value="rgb(255, 0, 0)"></label><label>  HSL:  <input onclick="this.select(0,this.value.length)" id="hsl" type="text" value="hsl(360, 0%, 0%)"></label></div></div><div class="ACP_text_color">  <div id="ACP_text_display"></div> <div> <label>    HEX:    <input onclick="this.select(0,this.value.length)" id="text_hex" type="text" name="" value="">  </label>  <label>    RGB:    <input onclick="this.select(0,this.value.length)" id="text_rgb" type="text" value="rgb(255, 0, 0)">  </label>  <label>    HSL:    <input onclick="this.select(0,this.value.length)" id="text_hsl" type="text" value="hsl(360, 0%, 0%)">  </label></div></div><div id="ACP_sample_bg"><span id="ACP_sample_text">sampleですー</span></div><div id="ACP_close">閉じる</div></div><div id="ACP_cursor"></div>';
+    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div class="ACP_bg_color"><div id="ACP_display"></div><div><label>  <span>HEX:</span>  <input onclick="this.select(0,this.value.length)" id="hex" type="text" name="" value=""></label><label>  <span>RGB:</span>  <input onclick="this.select(0,this.value.length)" id="rgb" type="text" value="rgb(255, 0, 0)"></label><label>  <span>HSL:</span>  <input onclick="this.select(0,this.value.length)" id="hsl" type="text" value="hsl(360, 0%, 0%)"></label></div></div><div class="ACP_text_color">  <div id="ACP_text_display"></div> <div> <label>    <span>HEX:</span>    <input onclick="this.select(0,this.value.length)" id="text_hex" type="text" name="" value="">  </label>  <label>    <span>RGB:</span>    <input onclick="this.select(0,this.value.length)" id="text_rgb" type="text" value="rgb(255, 0, 0)">  </label>  <label>    <span>HSL:</span>    <input onclick="this.select(0,this.value.length)" id="text_hsl" type="text" value="hsl(360, 0%, 0%)">  </label></div></div><div id="ACP_sample_bg"><span id="ACP_sample_text">sampleですー</span></div><div id="ACP_close">閉じる</div></div><div id="ACP_cursor"></div>';
     document.body.appendChild(ACP_content);
 
     // 画像
@@ -116,7 +116,6 @@ function loadComplete() {
 }
 
 function mouseMove(e) {
-    if (holding) return;
 
     var mx, my, n, color, r, g, b, h, s, l;
 
@@ -133,15 +132,10 @@ function mouseMove(e) {
     r = color[0]; g = color[1]; b = color[2];
     h = color[3]; s = color[4]; l = color[5];
 
-    // カラー表示
-    ACP_display.style.backgroundColor = 'rgb(' + r + ', ' + g + ', ' + b + ')';
 
-    // RGB 情報
-    inputs.hex.value = '#' + (b | (g << 8) | (r << 16)).toString(16).toUpperCase();
-    inputs.rgb.value = 'rgb(' + r + ',' + g + ',' + b + ')';
-
-    // HSL 情報
-    inputs.hsl.value = 'hsl(' + Math.round(h) + ',' + Math.round(s) + '%,' + Math.round(l) + '%)';
+    picker.style.left = e.clientX - 11 + 'px';
+    picker.style.top = e.clientY - 11 + 'px';
+    picker.style.backgroundColor = 'rgb(' + r + ', ' + g + ', ' + b + ')';
 }
 
 /*
@@ -158,46 +152,50 @@ function getElementPosition(elem) {
 
     // Firefox では　getBoundingClientRect　で取得した値が 1px 少なくなるので足しておく
     return {
-	x: Math.round(rect.left + 1 - html.clientLeft + scrollLeft),
-	y: Math.round(rect.top + 1 - html.clientTop + scrollTop)
+    	x: Math.round(rect.left + 1 - html.clientLeft + scrollLeft),
+    	y: Math.round(rect.top + 1 - html.clientTop + scrollTop)
     };
 }
 
 function mouseDown(e) {
-    if (!holding) {
 
-      var mx, my, n, color, r, g, b, h, s, l;
+    var mx, my, n, color, r, g, b, h, s, l;
 
-      // カーソル位置からピクセルの配列位置を取得
-      n = e.offsetX + e.offsetY * (img.width - 1);
-      // Firefox の場合 (offsetX, offsetY から値が取れない場合)
-      if (!n && n !== 0) {
-      	var pos = getElementPosition(img);
-      	n = (e.layerX - pos.x) + (e.layerY - pos.y) * (img.width - 1);
-      }
-
-      color = colors[n];
-      if (!color) return;
-      r = color[0]; g = color[1]; b = color[2];
-      h = color[3]; s = color[4]; l = color[5];
-
-
-    	picker.style.display = 'block';
-    	picker.style.left = e.clientX - 11 + 'px';
-      picker.style.top = e.clientY - 11 + 'px';
-    	picker.style.backgroundColor = ACP_display.style.backgroundColor;
-      var sampleColor = getAccessibleColor(r,g,b);
-      ACP_sample_bg.style.backgroundColor = ACP_display.style.backgroundColor;
-      ACP_sample_text.style.color =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
-      ACP_text_display.style.backgroundColor =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
-      inputs.text_hex.value = '#' + (b | (g << 8) | (r << 16)).toString(16).toUpperCase();
-      inputs.text_rgb.value = 'rgb(' + r + ',' + g + ',' + b + ')';
-      inputs.text_hsl.value = 'hsl(' + Math.round(sampleColor[0]) + ',' + Math.round(sampleColor[1]*100) + '%,' + Math.round(sampleColor[2]*100) + '%)';
-
-    } else {
-    	picker.style.display = 'none';
+    // カーソル位置からピクセルの配列位置を取得
+    n = e.offsetX + e.offsetY * (img.width - 1);
+    // Firefox の場合 (offsetX, offsetY から値が取れない場合)
+    if (!n && n !== 0) {
+    	var pos = getElementPosition(img);
+    	n = (e.layerX - pos.x) + (e.layerY - pos.y) * (img.width - 1);
     }
-    holding = !holding;
+
+    color = colors[n];
+    if (!color) return;
+    r = color[0]; g = color[1]; b = color[2];
+    h = color[3]; s = color[4]; l = color[5];
+
+
+  	picker.style.display = 'block';
+  	picker.style.left = e.clientX - 11 + 'px';
+    picker.style.top = e.clientY - 11 + 'px';
+  	picker.style.backgroundColor = 'rgb(' + r + ',' + g + ',' + b + ')';
+
+    // カラー表示
+    ACP_display.style.backgroundColor = 'rgb(' + r + ', ' + g + ', ' + b + ')';
+    inputs.hex.value = '#' + (b | (g << 8) | (r << 16)).toString(16).toUpperCase();
+    inputs.rgb.value = 'rgb(' + r + ',' + g + ',' + b + ')';
+    inputs.hsl.value = 'hsl(' + Math.round(h) + ',' + Math.round(s) + '%,' + Math.round(l) + '%)';
+
+    var sampleColor = getAccessibleColor(r,g,b);
+    ACP_text_display.style.backgroundColor =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
+    inputs.text_hex.value = '#' + (b | (g << 8) | (r << 16)).toString(16).toUpperCase();
+    inputs.text_rgb.value = 'rgb(' + r + ',' + g + ',' + b + ')';
+    inputs.text_hsl.value = 'hsl(' + Math.round(sampleColor[0]) + ',' + Math.round(sampleColor[1]*100) + '%,' + Math.round(sampleColor[2]*100) + '%)';
+
+    ACP_sample_bg.style.backgroundColor = ACP_display.style.backgroundColor;
+    ACP_sample_text.style.color =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
+
+
 }
 
 function getAccessibleColor(r,g,b){
