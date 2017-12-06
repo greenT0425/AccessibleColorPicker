@@ -4,10 +4,11 @@
   left: 0;
   width: 100%;
   z-index: 100;
-  border: 1px solid red;
+  border: 1px dotted #bbb;
   box-sizing: border-box;
   background: white;
   cursor: crosshair;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Noto Sans Japanese", "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, Meiryo, sans-serif;
 }
 
 #ACP_content {
@@ -24,15 +25,26 @@
   left: auto;
   color:white;
   box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  cursor: default;
 }
 
 .ACP_bg_color,
 .ACP_text_color{
   width: 100%;
-  padding: 20px;
+  padding: 30px 20px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  position: relative;
+}
+.ACP_bg_color h2,
+.ACP_text_color h2{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-bottom: 1px solid;
+  font-size: 1.1rem;
 }
 .ACP_bg_color label,
 .ACP_text_color label{
@@ -95,6 +107,7 @@
   line-height: 30px;
   border: 1px solid white;
   color: white;
+  cursor: pointer;
 }
 #ACP_cursor {
   width: 20px;
@@ -105,5 +118,8 @@
   top:0;
   left:0;
   pointer-events: none;
-  /*display: none;*/
+  display: block;
+}
+#ACP_info:hover~#ACP_cursor{
+  display: none !important;
 }

@@ -46,7 +46,7 @@ function init(url) {
 
     ACP_content = document.createElement('div');
     ACP_content.id = 'ACP_container';
-    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div class="ACP_bg_color"><div id="ACP_display"></div><div><label>  <span>HEX:</span>  <input onclick="this.select(0,this.value.length)" id="hex" type="text" name="" value=""></label><label>  <span>RGB:</span>  <input onclick="this.select(0,this.value.length)" id="rgb" type="text" value="rgb(255, 0, 0)"></label><label>  <span>HSL:</span>  <input onclick="this.select(0,this.value.length)" id="hsl" type="text" value="hsl(360, 0%, 0%)"></label></div></div><div class="ACP_text_color">  <div id="ACP_text_display"></div> <div> <label>    <span>HEX:</span>    <input onclick="this.select(0,this.value.length)" id="text_hex" type="text" name="" value="">  </label>  <label>    <span>RGB:</span>    <input onclick="this.select(0,this.value.length)" id="text_rgb" type="text" value="rgb(255, 0, 0)">  </label>  <label>    <span>HSL:</span>    <input onclick="this.select(0,this.value.length)" id="text_hsl" type="text" value="hsl(360, 0%, 0%)">  </label></div></div><div id="ACP_sample_bg"><span id="ACP_sample_text">sampleですー</span></div><div id="ACP_close">閉じる</div></div><div id="ACP_cursor"></div>';
+    ACP_content.innerHTML = '<div id="ACP_content"><img id="img" src="" alt=""></div><div id="ACP_info"><div class="ACP_bg_color"><h2>選択した色</h2><div id="ACP_display"></div><div><label>  <span>HEX:</span>  <input onclick="this.select(0,this.value.length)" id="hex" type="text" name="" value=""></label><label>  <span>RGB:</span>  <input onclick="this.select(0,this.value.length)" id="rgb" type="text" value="rgb(255, 0, 0)"></label><label>  <span>HSL:</span>  <input onclick="this.select(0,this.value.length)" id="hsl" type="text" value="hsl(360, 0%, 0%)"></label></div></div><div class="ACP_text_color"><h2>提案された色</h2><div id="ACP_text_display"></div> <div> <label>    <span>HEX:</span>    <input onclick="this.select(0,this.value.length)" id="text_hex" type="text" name="" value="">  </label>  <label>    <span>RGB:</span>    <input onclick="this.select(0,this.value.length)" id="text_rgb" type="text" value="rgb(255, 0, 0)">  </label>  <label>    <span>HSL:</span>    <input onclick="this.select(0,this.value.length)" id="text_hsl" type="text" value="hsl(360, 0%, 0%)">  </label></div></div><div id="ACP_sample_bg"><span id="ACP_sample_text">sampleですー</span></div><div id="ACP_close">閉じる</div></div><div id="ACP_cursor"></div>';
     document.body.appendChild(ACP_content);
 
     // 画像
@@ -159,7 +159,7 @@ function getElementPosition(elem) {
 
 function mouseDown(e) {
 
-    var mx, my, n, color, r, g, b, h, s, l;
+    var mx, my, n, color, r, g, b, h, s, l, sR, sG, sB, sH, sS, sL;
 
     // カーソル位置からピクセルの配列位置を取得
     n = e.offsetX + e.offsetY * (img.width - 1);
@@ -187,13 +187,17 @@ function mouseDown(e) {
     inputs.hsl.value = 'hsl(' + Math.round(h) + ',' + Math.round(s) + '%,' + Math.round(l) + '%)';
 
     var sampleColor = getAccessibleColor(r,g,b);
-    ACP_text_display.style.backgroundColor =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
-    inputs.text_hex.value = '#' + (b | (g << 8) | (r << 16)).toString(16).toUpperCase();
-    inputs.text_rgb.value = 'rgb(' + r + ',' + g + ',' + b + ')';
-    inputs.text_hsl.value = 'hsl(' + Math.round(sampleColor[0]) + ',' + Math.round(sampleColor[1]*100) + '%,' + Math.round(sampleColor[2]*100) + '%)';
+    sR = sampleColor[0]; sG = sampleColor[1]; sB = sampleColor[2];
+    sH = sampleColor[3]; sS = sampleColor[4]; sL = sampleColor[5];
+
+
+    ACP_text_display.style.backgroundColor =  'rgb(' + sR + ',' + sG + ',' + sB + ')';
+    inputs.text_hex.value = '#' + (sB | (sG << 8) | (sR << 16)).toString(16).toUpperCase();
+    inputs.text_rgb.value = 'rgb(' + sR + ',' + sG + ',' + sB + ')';
+    inputs.text_hsl.value = 'hsl(' + Math.round(sH) + ',' + Math.round(sS*100) + '%,' + Math.round(sL*100) + '%)';
 
     ACP_sample_bg.style.backgroundColor = ACP_display.style.backgroundColor;
-    ACP_sample_text.style.color =  'hsl(' + sampleColor[0] + ', ' + sampleColor[1]*100 + '%, ' + sampleColor[2]*100 + '%)';
+    ACP_sample_text.style.color =  'rgb(' + sR + ',' + sG + ',' + sB + ')';
 
 
 }
@@ -258,10 +262,11 @@ function getAccessibleColor(r,g,b){
   hslColor[2] = sample_brightness/255;
   hslColor[2] = sample_luminosity;
 
-  console.log('rgb:' + r + ',' + g + ',' + b + '\nhsl:' + hslColor +'\nluminosity:' + luminosity+ '\nl1:'+ l1+ '\nl2:'+ l2 +'\nsample_luminosity:' + sample_luminosity + '\n提案rgb:' + hsvToRgb(hslColor[0],hslColor[1],hslColor[2]) + '\n提案hsl:' + hslColor[0] +',' + hslColor[1] + ',' + hslColor[2]);
+  console.log('rgb:' + r + ',' + g + ',' + b + '\nhsl:' + hslColor +'\nluminosity:' + luminosity+ '\nl1:'+ l1+ '\nl2:'+ l2 +'\nsample_luminosity:' + sample_luminosity + '\n提案rgb:' + hslToRgb(hslColor[0],hslColor[1],hslColor[2]) + '\n提案hsl:' + hslColor[0] +',' + hslColor[1] + ',' + hslColor[2]);
+  var rgbColor = hslToRgb(hslColor[0],hslColor[1],sample_luminosity);
 
   // return hsvToRgb(hslColor[0],hslColor[1],sample_luminosity);
-  return [hslColor[0],hslColor[1],sample_luminosity]
+  return [rgbColor[0],rgbColor[1],rgbColor[2],hslColor[0],hslColor[1],sample_luminosity]
 }
 
 
@@ -292,29 +297,66 @@ function rgbToHsl(r, g, b) {
     return [h, s, l, 'hsl'];
 }
 
-function hsvToRgb(h,s,v) {
-    //https://en.wikipedia.org/wiki/HSL_and_HSV#From_HSV
+function hslToRgb(h, l, s) {
+  var r, g, b; // 0..255
 
-    var C = v * s;
-    var Hp = h / 60;
-    var X = C * (1 - Math.abs(Hp % 2 - 1));
+  while (h < 0) {
+    h += 360;
+  }
+  h = h % 360;
 
-    var R, G, B;
-    if (0 <= Hp && Hp < 1) {[R,G,B]=[C,X,0]};
-    if (1 <= Hp && Hp < 2) {[R,G,B]=[X,C,0]};
-    if (2 <= Hp && Hp < 3) {[R,G,B]=[0,C,X]};
-    if (3 <= Hp && Hp < 4) {[R,G,B]=[0,X,C]};
-    if (4 <= Hp && Hp < 5) {[R,G,B]=[X,0,C]};
-    if (5 <= Hp && Hp < 6) {[R,G,B]=[C,0,X]};
+  // 特別な場合 saturation = 0
+  if (s == 0) {
+    // → RGB は V に等しい
+    l = Math.round(l * 255);
+    return {'r': l, 'g': l, 'b': l, 'type': 'RGB'};
+  }
 
-    var m = v - C;
-    [R, G, B] = [R+m, G+m, B+m];
+  var m2 = (l < 0.5) ? l * (1 + s) : l + s - l * s,
+      m1 = l * 2 - m2,
+      tmp;
 
-    R = Math.floor(R * 255);
-    G = Math.floor(G * 255);
-    B = Math.floor(B * 255);
+  tmp = h + 120;
+  if (tmp > 360) {
+    tmp = tmp - 360
+  }
 
-    return [R ,G, B];
+  if (tmp < 60) {
+    r = (m1 + (m2 - m1) * tmp / 60);
+  } else if (tmp < 180) {
+    r = m2;
+  } else if (tmp < 240) {
+    r = m1 + (m2 - m1) * (240 - tmp) / 60;
+  } else {
+    r = m1;
+  }
+
+  tmp = h;
+  if (tmp < 60) {
+    g = m1 + (m2 - m1) * tmp / 60;
+  } else if (tmp < 180) {
+    g = m2;
+  } else if (tmp < 240) {
+    g = m1 + (m2 - m1) * (240 - tmp) / 60;
+  } else {
+    g = m1;
+  }
+
+  tmp = h - 120;
+  if (tmp < 0) {
+    tmp = tmp + 360
+  }
+  if (tmp < 60) {
+    b = m1 + (m2 - m1) * tmp / 60;
+  } else if (tmp < 180) {
+    b = m2;
+  } else if (tmp < 240) {
+    b = m1 + (m2 - m1) * (240 - tmp) / 60;
+  } else {
+    b = m1;
+  }
+
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
 }
 
 function closeAll(){
