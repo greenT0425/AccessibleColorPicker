@@ -53,6 +53,8 @@ function init(url) {
     img = $id('img');
     img.addEventListener('load', loadComplete, false);
     img.src = url;
+    img.srcset = url + ' 1x,' + url + ' 2x';
+    // img.styles.width = '100%';
 
     // 色情報を取得するための canvas
     canvas = document.createElement('canvas');
